@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "last_updated": "2025-11-16T03:57:00Z",
+  "description": "Master index of all legal statutes and decision pathways in TheHelpWorks Housing Engine repository",
+  "entries": [
+    {
+      "file_path": "docs/legal_statutes/stat09_statute_10_e6_housing_act_2004_hhsrs.pdf",
+      "type": "statute",
+      "title": "Housing Act 2004 - Housing Health and Safety Rating System (HHSRS)",
+      "citation": "2004 c. 34",
+      "last_updated": "2025-11-16T03:57:00Z",
+      "metadata_file": "docs/legal_statutes/stat09_statute_10_e6_housing_act_2004_hhsrs_metadata.json",
+      "added_in_pr": "3",
+      "canonical_location": "docs/legal_statutes/"
+    }
+  ]
+}
