@@ -25,12 +25,12 @@ export const Drawer: React.FC<DrawerProps> = ({
         {isOpen ? 'Close' : 'Open'} Drawer
       </StyledButton>
 
-      <DrawerOverlay isOpen={isOpen} onClick={close} />
+      <DrawerOverlay $isOpen={isOpen} onClick={close} />
       
-      <DrawerContainer isOpen={isOpen} position={position}>
+      <DrawerContainer $isOpen={isOpen} $position={position}>
         <DrawerHeader>
           <h2 style={{ margin: 0, fontSize: '20px' }}>{title}</h2>
-          <StyledButton variant="secondary" onClick={close}>
+          <StyledButton $variant="secondary" onClick={close}>
             Close
           </StyledButton>
         </DrawerHeader>

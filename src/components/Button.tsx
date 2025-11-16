@@ -21,7 +21,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <StyledButton
-      variant={variant}
+      $variant={variant}
       onClick={() => handleClick(onClick)}
       disabled={isDisabled || isLoading}
     >
