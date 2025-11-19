@@ -1,0 +1,206 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Question",
+  "description": "Defines a question in the triage decision tree",
+  "type": "object",
+  "required": ["id", "text", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this question"
+    },
+    "text": {
+      "type": "string",
+      "description": "The question text to display to the user"
+    },
+    "description": {
+      "type": "string",
+      "description": "Additional context or help text for the question"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["yes_no", "single_choice", "multiple_choice", "text", "number", "date", "location"],
+      "description": "Type of question and expected answer format"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["personal", "situation", "housing", "financial", "health", "legal", "family", "pets", "other"],
+      "description": "Category this question belongs to"
+    },
+    "required": {
+      "type": "boolean",
+      "description": "Whether this question must be answered",
+      "default": true
+    },
+    "options": {
+      "type": "array",
+      "description": "Available options for choice-type questions",
+      "items": {
+        "type": "object",
+        "required": ["id", "text"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this option"
+          },
+          "text": {
+            "type": "string",
+            "description": "Display text for this option"
+          },
+          "value": {
+            "description": "Value to store when this option is selected"
+          },
+          "description": {
+            "type": "string",
+            "description": "Additional information about this option"
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "description": "Validation rules for the answer",
+      "properties": {
+        "minLength": {
+          "type": "integer",
+          "description": "Minimum length for text answers"
+        },
+        "maxLength": {
+          "type": "integer",
+          "description": "Maximum length for text answers"
+        },
+        "min": {
+          "type": "number",
+          "description": "Minimum value for number answers"
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum value for number answers"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Regex pattern for text validation"
+        },
+        "customMessage": {
+          "type": "string",
+          "description": "Custom validation error message"
+        }
+      }
+    },
+    "stateMapping": {
+      "type": "string",
+      "description": "Path in session state where answer should be stored (e.g., 'user.hasChildren', 'situation.homelessTonight')"
+    },
+    "transitions": {
+      "type": "array",
+      "description": "Rules for determining the next question or action",
+      "items": {
+        "type": "object",
+        "required": ["condition", "next"],
+        "properties": {
+          "condition": {
+            "type": "object",
+            "description": "Condition that must be met for this transition",
+            "required": ["operator"],
+            "properties": {
+              "operator": {
+                "type": "string",
+                "enum": ["equals", "notEquals", "in", "notIn", "greaterThan", "lessThan", "contains", "any", "all"],
+                "description": "Comparison operator"
+              },
+              "value": {
+                "description": "Value to compare against"
+              },
+              "values": {
+                "type": "array",
+                "description": "Array of values for 'in' or 'notIn' operators"
+              }
+            }
+          },
+          "next": {
+            "type": "object",
+            "required": ["type"],
+            "description": "What to do next if condition is met",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["question", "action", "end"],
+                "description": "Type of next step"
+              },
+              "id": {
+                "type": "string",
+                "description": "ID of next question or action (required if type is 'question' or 'action')"
+              },
+              "message": {
+                "type": "string",
+                "description": "Message to display (optional)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "defaultTransition": {
+      "type": "object",
+      "description": "Default transition if no other conditions match",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["question", "action", "end"]
+        },
+        "id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "priority": {
+      "type": "integer",
+      "description": "Priority for asking this question (higher = asked sooner)",
+      "minimum": 0,
+      "default": 0
+    },
+    "showIf": {
+      "type": "object",
+      "description": "Conditions under which to show this question",
+      "properties": {
+        "field": {
+          "type": "string",
+          "description": "Session state field to check"
+        },
+        "operator": {
+          "type": "string",
+          "enum": ["equals", "notEquals", "exists", "notExists", "in", "notIn"]
+        },
+        "value": {
+          "description": "Value to compare against"
+        }
+      }
+    },
+    "helpText": {
+      "type": "string",
+      "description": "Additional help or guidance text"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

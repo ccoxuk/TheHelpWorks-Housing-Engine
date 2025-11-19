@@ -1,0 +1,221 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ActionTemplate",
+  "description": "Defines a template for actions that can be taken to assist homeless individuals",
+  "type": "object",
+  "required": ["id", "name", "type", "category"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this action template"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the action"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of what this action does"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["immediate", "referral", "application", "assessment", "notification", "documentation"],
+      "description": "Type of action this template represents"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["emergency", "housing", "financial", "support", "legal", "medical", "other"],
+      "description": "Category of assistance this action provides"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low"],
+      "description": "Urgency level of this action",
+      "default": "medium"
+    },
+    "steps": {
+      "type": "array",
+      "description": "Ordered list of steps to complete this action",
+      "items": {
+        "type": "object",
+        "required": ["order", "instruction"],
+        "properties": {
+          "order": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Step number in sequence"
+          },
+          "instruction": {
+            "type": "string",
+            "description": "What to do in this step"
+          },
+          "requiresInput": {
+            "type": "boolean",
+            "description": "Whether this step requires user input",
+            "default": false
+          },
+          "inputFields": {
+            "type": "array",
+            "description": "Fields to collect if input is required",
+            "items": {
+              "type": "object",
+              "required": ["name", "type"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Field name"
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Display label for the field"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["text", "number", "date", "boolean", "select", "multiselect", "textarea"],
+                  "description": "Input field type"
+                },
+                "required": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "options": {
+                  "type": "array",
+                  "description": "Options for select/multiselect fields",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "validation": {
+                  "type": "object",
+                  "description": "Validation rules for this field"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "requiredInformation": {
+      "type": "array",
+      "description": "Information needed before this action can be executed",
+      "items": {
+        "type": "string"
+      }
+    },
+    "estimatedDuration": {
+      "type": "string",
+      "description": "Estimated time to complete this action (e.g., '15 minutes', '1 hour', '1-3 days')"
+    },
+    "contactInfo": {
+      "type": "object",
+      "description": "Contact information for executing this action",
+      "properties": {
+        "phone": {
+          "type": "string",
+          "description": "Phone number to call"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address to contact"
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "Website URL for more information"
+        },
+        "address": {
+          "type": "string",
+          "description": "Physical address if needed"
+        },
+        "hoursOfOperation": {
+          "type": "string",
+          "description": "When this service/contact is available"
+        }
+      }
+    },
+    "prerequisites": {
+      "type": "array",
+      "description": "Action IDs that must be completed before this action",
+      "items": {
+        "type": "string"
+      }
+    },
+    "relatedServices": {
+      "type": "array",
+      "description": "Service IDs related to this action",
+      "items": {
+        "type": "string"
+      }
+    },
+    "documentation": {
+      "type": "object",
+      "description": "Documentation or forms associated with this action",
+      "properties": {
+        "forms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "required": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "guidance": {
+          "type": "string",
+          "description": "Additional guidance for completing this action"
+        }
+      }
+    },
+    "outcomes": {
+      "type": "array",
+      "description": "Possible outcomes of this action",
+      "items": {
+        "type": "object",
+        "required": ["id", "description"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "nextActions": {
+            "type": "array",
+            "description": "Actions to suggest based on this outcome",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

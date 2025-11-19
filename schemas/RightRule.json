@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RightRule",
+  "description": "Defines a legal or policy-based rule that determines eligibility for housing assistance rights",
+  "type": "object",
+  "required": ["id", "name", "jurisdiction", "conditions", "actions"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this rule"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the rule"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of what this rule determines"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "description": "Legal jurisdiction where this rule applies (e.g., 'England', 'Wales', 'Scotland')",
+      "examples": ["England", "Wales", "England/Wales", "Scotland"]
+    },
+    "legalBasis": {
+      "type": "string",
+      "description": "The legal statute or policy this rule is based on",
+      "examples": ["Housing Act 1996 Section 188", "Homelessness Reduction Act 2017"]
+    },
+    "priority": {
+      "type": "integer",
+      "description": "Priority level for rule evaluation (higher numbers = higher priority)",
+      "minimum": 0,
+      "default": 0
+    },
+    "conditions": {
+      "type": "object",
+      "description": "Conditions that must be met for this rule to apply",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["all", "any", "none"],
+          "description": "How to combine multiple conditions: 'all' (AND), 'any' (OR), 'none' (NOT)"
+        },
+        "rules": {
+          "type": "array",
+          "description": "Array of condition rules to evaluate",
+          "items": {
+            "type": "object",
+            "required": ["field", "operator", "value"],
+            "properties": {
+              "field": {
+                "type": "string",
+                "description": "Path to the field in session state (e.g., 'user.hasChildren', 'situation.homelessTonight')"
+              },
+              "operator": {
+                "type": "string",
+                "enum": ["equals", "notEquals", "greaterThan", "lessThan", "greaterThanOrEqual", "lessThanOrEqual", "contains", "notContains", "in", "notIn", "exists", "notExists"],
+                "description": "Comparison operator to use"
+              },
+              "value": {
+                "description": "Value to compare against (can be string, number, boolean, array, or null)"
+              }
+            }
+          }
+        },
+        "nested": {
+          "type": "array",
+          "description": "Nested condition groups for complex logic",
+          "items": {
+            "$ref": "#/properties/conditions"
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "description": "Action template IDs to trigger when this rule matches",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata about the rule",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Version of this rule definition"
+        },
+        "effectiveDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Date when this rule becomes effective"
+        },
+        "expiryDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Date when this rule expires (if applicable)"
+        },
+        "author": {
+          "type": "string",
+          "description": "Who created or maintains this rule"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags for categorizing and searching rules"
+        }
+      }
+    }
+  }
+}

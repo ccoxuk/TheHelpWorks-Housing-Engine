@@ -1,0 +1,361 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SessionState",
+  "description": "Represents the current state of a user's assistance session",
+  "type": "object",
+  "required": ["sessionId", "createdAt", "status"],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "description": "Unique identifier for this session"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this session was created"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this session was last updated"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "completed", "abandoned", "escalated"],
+      "description": "Current status of the session"
+    },
+    "user": {
+      "type": "object",
+      "description": "Information about the user seeking assistance",
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date"
+        },
+        "age": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gender": {
+          "type": "string"
+        },
+        "nationalInsuranceNumber": {
+          "type": "string",
+          "description": "UK National Insurance Number (stored securely)"
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "phone": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "preferredContact": {
+              "type": "string",
+              "enum": ["phone", "email", "text", "in-person"]
+            }
+          }
+        },
+        "hasChildren": {
+          "type": "boolean"
+        },
+        "numberOfChildren": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "childrenAges": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "isPregnant": {
+          "type": "boolean"
+        },
+        "hasPets": {
+          "type": "boolean"
+        },
+        "pets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["dog", "cat", "other"]
+              },
+              "breed": {
+                "type": "string"
+              },
+              "size": {
+                "type": "string",
+                "enum": ["small", "medium", "large"]
+              }
+            }
+          }
+        },
+        "disabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "medicalConditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hasLocalConnection": {
+          "type": "boolean",
+          "description": "Whether user has local connection to the area"
+        },
+        "localConnectionDetails": {
+          "type": "string"
+        }
+      }
+    },
+    "situation": {
+      "type": "object",
+      "description": "Current housing/homelessness situation",
+      "properties": {
+        "isHomeless": {
+          "type": "boolean"
+        },
+        "homelessTonight": {
+          "type": "boolean",
+          "description": "Whether user will be homeless tonight"
+        },
+        "currentLocation": {
+          "type": "string",
+          "description": "Where the user currently is"
+        },
+        "currentLocationCoordinates": {
+          "type": "object",
+          "properties": {
+            "latitude": {
+              "type": "number"
+            },
+            "longitude": {
+              "type": "number"
+            }
+          }
+        },
+        "roughSleeping": {
+          "type": "boolean",
+          "description": "Whether currently rough sleeping"
+        },
+        "nightsSleepingRough": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hasBeenEvicted": {
+          "type": "boolean"
+        },
+        "evictionDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "reasonForHomelessness": {
+          "type": "string",
+          "enum": ["eviction", "domestic_abuse", "family_breakdown", "financial", "relationship_breakdown", "leaving_care", "leaving_prison", "leaving_hospital", "other"]
+        },
+        "reasonDetails": {
+          "type": "string"
+        },
+        "atRiskOfViolence": {
+          "type": "boolean"
+        },
+        "hasLuggageOrBelongings": {
+          "type": "boolean"
+        },
+        "belongingsLocation": {
+          "type": "string"
+        },
+        "urgentNeeds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["shelter", "food", "medical", "safety", "clothing", "hygiene"]
+          }
+        }
+      }
+    },
+    "housing": {
+      "type": "object",
+      "description": "Housing history and preferences",
+      "properties": {
+        "previousAddress": {
+          "type": "string"
+        },
+        "tenureType": {
+          "type": "string",
+          "enum": ["private_rental", "social_housing", "owner_occupied", "staying_with_friends", "staying_with_family", "other", "none"]
+        },
+        "hasRentArrears": {
+          "type": "boolean"
+        },
+        "rentArrearsAmount": {
+          "type": "number"
+        },
+        "preferredAreas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "legal": {
+      "type": "object",
+      "description": "Legal status and eligibility",
+      "properties": {
+        "rightToReside": {
+          "type": "boolean",
+          "description": "Whether user has right to reside in UK"
+        },
+        "immigrationStatus": {
+          "type": "string"
+        },
+        "hasPriorityNeed": {
+          "type": "boolean",
+          "description": "Whether user has priority need under homelessness legislation"
+        },
+        "priorityNeedReasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["children", "pregnancy", "vulnerable_age", "disability", "emergency", "disaster", "violence"]
+          }
+        },
+        "intentionallyHomeless": {
+          "type": "boolean"
+        }
+      }
+    },
+    "currentQuestion": {
+      "type": "string",
+      "description": "ID of the current question being asked"
+    },
+    "answers": {
+      "type": "object",
+      "description": "Map of question IDs to user answers",
+      "additionalProperties": true
+    },
+    "triggeredRules": {
+      "type": "array",
+      "description": "Rules that have been triggered in this session",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ruleId": {
+            "type": "string"
+          },
+          "triggeredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "result": {
+            "type": "string",
+            "enum": ["matched", "not_matched", "error"]
+          }
+        }
+      }
+    },
+    "completedActions": {
+      "type": "array",
+      "description": "Actions that have been completed",
+      "items": {
+        "type": "object",
+        "properties": {
+          "actionId": {
+            "type": "string"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "pendingActions": {
+      "type": "array",
+      "description": "Actions that need to be completed",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recommendedServices": {
+      "type": "array",
+      "description": "Services recommended for this user",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "description": "Case notes and observations",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "author": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["observation", "action_taken", "user_statement", "assessment", "other"]
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional session metadata",
+      "properties": {
+        "contentPackId": {
+          "type": "string",
+          "description": "ID of the content pack being used"
+        },
+        "jurisdiction": {
+          "type": "string",
+          "description": "Legal jurisdiction for this session"
+        },
+        "language": {
+          "type": "string",
+          "default": "en-GB"
+        },
+        "channel": {
+          "type": "string",
+          "enum": ["web", "mobile", "phone", "in-person", "chatbot"],
+          "description": "How the user is accessing the system"
+        },
+        "assistedBy": {
+          "type": "string",
+          "description": "ID or name of caseworker/volunteer assisting"
+        }
+      }
+    }
+  }
+}

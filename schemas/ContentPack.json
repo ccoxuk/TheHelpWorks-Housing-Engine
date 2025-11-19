@@ -1,0 +1,249 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ContentPack",
+  "description": "A complete content pack containing all localized resources, rules, and workflows for a specific jurisdiction",
+  "type": "object",
+  "required": ["id", "name", "version", "jurisdiction"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this content pack"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the content pack"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what this content pack covers"
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of this content pack (e.g., '1.0.0')",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "description": "Legal jurisdiction this pack applies to",
+      "examples": ["England", "Wales", "England/Wales", "Scotland", "London"]
+    },
+    "language": {
+      "type": "string",
+      "description": "Primary language code (ISO 639-1)",
+      "default": "en"
+    },
+    "supportedLanguages": {
+      "type": "array",
+      "description": "All supported language codes",
+      "items": {
+        "type": "string"
+      },
+      "default": ["en"]
+    },
+    "effectiveDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date from which this content pack is effective"
+    },
+    "expiryDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when this content pack expires (if applicable)"
+    },
+    "entryPoint": {
+      "type": "string",
+      "description": "ID of the first question to ask in the triage flow"
+    },
+    "questions": {
+      "type": "array",
+      "description": "All questions in the triage decision tree",
+      "items": {
+        "$ref": "Question.json"
+      }
+    },
+    "rules": {
+      "type": "array",
+      "description": "All rules for determining eligibility and actions",
+      "items": {
+        "$ref": "RightRule.json"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "description": "All action templates available in this pack",
+      "items": {
+        "$ref": "ActionTemplate.json"
+      }
+    },
+    "services": {
+      "type": "array",
+      "description": "All services and resources available in this jurisdiction",
+      "items": {
+        "$ref": "Service.json"
+      }
+    },
+    "workflows": {
+      "type": "array",
+      "description": "Pre-defined workflows for common scenarios",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "trigger"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "object",
+            "description": "Conditions that trigger this workflow",
+            "properties": {
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "steps": {
+            "type": "array",
+            "description": "Ordered steps in this workflow",
+            "items": {
+              "type": "object",
+              "properties": {
+                "order": {
+                  "type": "integer"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["question", "rule_check", "action", "decision"]
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "legalReferences": {
+      "type": "array",
+      "description": "References to relevant legislation and policies",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the law/policy"
+          },
+          "citation": {
+            "type": "string",
+            "description": "Legal citation"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to full text"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Brief summary of relevant provisions"
+          }
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "description": "Additional resources like documents, forms, information sheets",
+      "properties": {
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["form", "guide", "factsheet", "template", "other"]
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "helplines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "available24_7": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Pack metadata",
+      "properties": {
+        "author": {
+          "type": "string",
+          "description": "Organization or individual who created this pack"
+        },
+        "maintainer": {
+          "type": "string",
+          "description": "Who maintains this pack"
+        },
+        "license": {
+          "type": "string",
+          "description": "License for this content pack"
+        },
+        "dataSource": {
+          "type": "string",
+          "description": "Source of the data in this pack"
+        },
+        "lastVerified": {
+          "type": "string",
+          "format": "date",
+          "description": "When content was last verified for accuracy"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
