@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Drawer, Button } from './components';
+import { Drawer, Button, EngineDemo } from './components';
 
 const AppContainer = styled.div`
   padding: 40px;
@@ -75,6 +75,15 @@ function App() {
             </ul>
           </div>
         </Drawer>
+      </Section>
+
+      <Section>
+        <SectionTitle>U-HSP Rules Engine Demo</SectionTitle>
+        <Description>
+          This demonstrates the Universal Homelessness Support Platform engine in action.
+          It loads the London content pack and evaluates rules for a sample scenario.
+        </Description>
+        <EngineDemo />
       </Section>
     </AppContainer>
   );
