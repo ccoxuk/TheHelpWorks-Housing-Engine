@@ -4,7 +4,58 @@ Providing assistance and creating ownership for those at risk of losing their ho
 
 ## Overview
 
-This is a React-based web application built with TypeScript, Vite, and styled-components. It demonstrates extensible UI components with custom hooks for managing button interactions and drawer navigation.
+This is a comprehensive React-based web application built with TypeScript, Vite, and styled-components. It provides a modular, extensible architecture for housing assistance case management with a focus on user-centricity, GDPR compliance, and AI-awareness.
+
+## Key Features
+
+- **Dynamic Workflow Engine**: Adaptive pathways based on user responses with conditional logic
+- **Professional Report Generation**: Multiple report types (case summaries, action plans, timelines) in various formats
+- **GDPR-Compliant Privacy Management**: Built-in consent tracking, data anonymization, and retention policies
+- **Comprehensive Type System**: Full TypeScript type safety with litigation-grade audit trails
+- **AI-Aware Architecture**: Rich metadata and stable anchors for seamless AI integration
+- **Modular Design**: Extensible components, services, and utilities
+
+## Architecture
+
+The application is built on a modular architecture with clear separation of concerns:
+
+```
+src/
+├── types/          # TypeScript type definitions
+├── services/       # Business logic (WorkflowEngine, ReportGenerator)
+├── workflows/      # Workflow definitions with conditional logic
+├── utils/          # Privacy, validation utilities
+├── config/         # Application configuration
+├── data/           # Sample and reference data
+└── components/     # React UI components
+```
+
+For detailed architecture documentation, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Core Components
+
+### Workflow Engine
+Dynamic question-and-answer system with:
+- 9 question types (single choice, multiple choice, text, number, date, currency, yes/no, scale, file upload)
+- Conditional branching logic
+- Session state management
+- Progress tracking
+- Save and resume capability
+
+### Report Generator
+Professional document generation supporting:
+- Case Summary Reports
+- Action Plan Reports with timelines
+- Progress Reports
+- Timeline Reports with milestones
+- Multiple formats: PDF, HTML, Markdown, JSON
+
+### Privacy Manager
+GDPR-compliant utilities including:
+- Consent management and tracking
+- Data anonymization and masking
+- Retention policy enforcement
+- Audit logging
 
 ## Features
 
@@ -12,6 +63,8 @@ This is a React-based web application built with TypeScript, Vite, and styled-co
 - **Styled Components**: Extensible, themeable components using styled-components
 - **TypeScript**: Full type safety throughout the application
 - **Modern Build Tools**: Fast development with Vite
+- **GDPR Compliance**: Privacy-first design with built-in data protection
+- **Validation System**: Comprehensive data validation for UK formats (email, phone, postcode, NI number)
 
 ## Getting Started
 
@@ -93,7 +146,46 @@ const { isOpen, open, close, toggle } = useDrawer();
 - `close`: Function to close the drawer
 - `toggle`: Function to toggle drawer state
 
-### Components
+### Core Services
+
+#### WorkflowEngine
+
+Manages dynamic user pathways through conditional question flows.
+
+```tsx
+import { WorkflowEngine } from './services';
+import { rentArrearsAssessmentWorkflow } from './workflows';
+
+const engine = new WorkflowEngine(workflow, session);
+const result = engine.submitResponse(response);
+const nextQuestion = engine.getCurrentQuestion();
+```
+
+#### ReportGenerator
+
+Creates professional reports in multiple formats.
+
+```tsx
+import { ReportGenerator } from './services';
+
+const generator = new ReportGenerator();
+const report = generator.generateCaseSummary(caseData, assessment, 'pdf');
+const html = generator.exportReport(report, 'html');
+```
+
+#### PrivacyManager
+
+Handles GDPR compliance and data protection.
+
+```tsx
+import { PrivacyManager } from './utils';
+
+const privacyManager = new PrivacyManager();
+privacyManager.recordConsent(userId, purpose, true);
+const anonymized = privacyManager.anonymizeUser(userData);
+```
+
+### UI Components
 
 #### `Button`
 
@@ -169,22 +261,123 @@ const WideDrawer = styled(DrawerContainer)`
 ```
 TheHelpWorks-Housing-Engine/
 ├── src/
-│   ├── components/
-│   │   ├── Button.tsx          # Button component
-│   │   ├── Drawer.tsx          # Drawer component
-│   │   ├── styled.ts           # Extensible styled components
-│   │   └── index.ts            # Component exports
-│   ├── hooks/
-│   │   └── index.ts            # Custom hooks
-│   ├── App.tsx                 # Main application
-│   ├── main.tsx                # Application entry point
-│   └── vite-env.d.ts          # Vite types
-├── index.html                  # HTML template
-├── package.json                # Dependencies and scripts
-├── tsconfig.json              # TypeScript config
-├── vite.config.ts             # Vite config
-└── .eslintrc.cjs              # ESLint config
+│   ├── components/         # React UI components
+│   │   ├── Button.tsx
+│   │   ├── Drawer.tsx
+│   │   ├── styled.ts
+│   │   └── index.ts
+│   ├── hooks/              # Custom React hooks
+│   │   └── index.ts
+│   ├── services/           # Business logic services
+│   │   ├── WorkflowEngine.ts
+│   │   ├── ReportGenerator.ts
+│   │   └── index.ts
+│   ├── workflows/          # Workflow definitions
+│   │   ├── rentArrearsAssessment.ts
+│   │   └── index.ts
+│   ├── types/              # TypeScript type definitions
+│   │   ├── metadata.ts
+│   │   ├── domain.ts
+│   │   ├── workflow.ts
+│   │   ├── report.ts
+│   │   └── index.ts
+│   ├── utils/              # Utility functions
+│   │   ├── privacy.ts
+│   │   ├── validation.ts
+│   │   └── index.ts
+│   ├── config/             # Application configuration
+│   │   └── index.ts
+│   ├── data/               # Sample data
+│   │   └── samples.ts
+│   ├── App.tsx             # Main application
+│   ├── main.tsx            # Application entry point
+│   └── vite-env.d.ts       # Vite types
+├── ARCHITECTURE.md         # Detailed architecture documentation
+├── index.html              # HTML template
+├── package.json            # Dependencies and scripts
+├── tsconfig.json           # TypeScript config
+├── vite.config.ts          # Vite config
+└── .eslintrc.cjs           # ESLint config
 ```
+
+## Usage Examples
+
+### Creating a Workflow Session
+
+```tsx
+import { WorkflowEngine } from './services';
+import { rentArrearsAssessmentWorkflow } from './workflows';
+
+const session = {
+  sessionId: 'session-001',
+  workflowId: 'rent-arrears-assessment',
+  userId: 'user-001',
+  currentQuestionId: 'q1-arrears-amount',
+  responses: [],
+  status: 'in_progress',
+  // ... other fields
+};
+
+const engine = new WorkflowEngine(rentArrearsAssessmentWorkflow, session);
+```
+
+### Generating a Report
+
+```tsx
+import { ReportGenerator } from './services';
+import { sampleCase, sampleAssessment } from './data/samples';
+
+const generator = new ReportGenerator();
+const report = generator.generateCaseSummary(
+  sampleCase,
+  sampleAssessment,
+  'html'
+);
+```
+
+### Managing Privacy
+
+```tsx
+import { PrivacyManager, DataMasker } from './utils';
+
+const privacyManager = new PrivacyManager();
+
+// Record consent
+privacyManager.recordConsent('user-001', 'housing-assistance', true);
+
+// Mask sensitive data
+const masked = DataMasker.maskEmail('john.smith@example.com');
+// Returns: j***h@example.com
+```
+
+## GDPR Compliance
+
+The application includes built-in GDPR compliance features:
+
+- **Consent Management**: Track and manage user consent for data processing
+- **Data Anonymization**: Anonymize personal data when required
+- **Data Masking**: Mask sensitive information in displays
+- **Retention Policies**: Automatic data retention management
+- **Right to Erasure**: Support for data deletion requests
+- **Audit Logging**: Complete audit trail of data operations
+
+## Extensibility
+
+The architecture is designed for easy extension:
+
+- **Add New Workflows**: Create workflow definitions in `src/workflows/`
+- **Add New Question Types**: Extend the workflow engine
+- **Add New Report Types**: Extend the report generator
+- **Add New Validators**: Add to `src/utils/validation.ts`
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed guidance.
+
+## Documentation
+
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Comprehensive architecture documentation
+- Inline JSDoc comments throughout the codebase
+- AI-context annotations for AI-assisted development
+- Sample data in `src/data/samples.ts`
 
 ## Contributing
 
