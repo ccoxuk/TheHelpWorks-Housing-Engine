@@ -1,0 +1,313 @@
+{
+  "id": "waterloo-dog-homeless-tonight-flow",
+  "name": "Waterloo Station + Dog + Homeless Tonight Triage Flow",
+  "description": "Worked example of a triage decision tree for someone at Waterloo Station with a dog facing homelessness tonight",
+  "version": "1.0.0",
+  "questions": [
+    {
+      "id": "q1_homeless_tonight",
+      "text": "Are you homeless or will you be homeless tonight?",
+      "description": "This helps us understand the urgency of your situation",
+      "type": "yes_no",
+      "category": "situation",
+      "required": true,
+      "stateMapping": "situation.homelessTonight",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "equals",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q2_current_location"
+          }
+        },
+        {
+          "condition": {
+            "operator": "equals",
+            "value": false
+          },
+          "next": {
+            "type": "question",
+            "id": "q_prevention_pathway"
+          }
+        }
+      ],
+      "priority": 100
+    },
+    {
+      "id": "q2_current_location",
+      "text": "Where are you right now?",
+      "description": "Knowing your location helps us find nearby services",
+      "type": "text",
+      "category": "situation",
+      "required": true,
+      "stateMapping": "situation.currentLocation",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "any",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q3_has_pets"
+          }
+        }
+      ],
+      "priority": 90
+    },
+    {
+      "id": "q3_has_pets",
+      "text": "Do you have any pets with you?",
+      "description": "Some shelters can accommodate pets, others cannot",
+      "type": "yes_no",
+      "category": "personal",
+      "required": true,
+      "stateMapping": "user.hasPets",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "equals",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q4_pet_type"
+          }
+        },
+        {
+          "condition": {
+            "operator": "equals",
+            "value": false
+          },
+          "next": {
+            "type": "question",
+            "id": "q5_has_children"
+          }
+        }
+      ],
+      "priority": 85
+    },
+    {
+      "id": "q4_pet_type",
+      "text": "What type of pet do you have?",
+      "type": "multiple_choice",
+      "category": "personal",
+      "required": true,
+      "stateMapping": "user.pets",
+      "options": [
+        {
+          "id": "dog",
+          "text": "Dog",
+          "value": "dog"
+        },
+        {
+          "id": "cat",
+          "text": "Cat",
+          "value": "cat"
+        },
+        {
+          "id": "other",
+          "text": "Other",
+          "value": "other"
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "operator": "any",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q5_has_children"
+          }
+        }
+      ],
+      "priority": 84
+    },
+    {
+      "id": "q5_has_children",
+      "text": "Do you have any children with you or in your care?",
+      "description": "Having children affects your priority need status",
+      "type": "yes_no",
+      "category": "family",
+      "required": true,
+      "stateMapping": "user.hasChildren",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "equals",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q6_number_of_children"
+          }
+        },
+        {
+          "condition": {
+            "operator": "equals",
+            "value": false
+          },
+          "next": {
+            "type": "question",
+            "id": "q7_age"
+          }
+        }
+      ],
+      "priority": 80
+    },
+    {
+      "id": "q6_number_of_children",
+      "text": "How many children are with you?",
+      "type": "number",
+      "category": "family",
+      "required": true,
+      "stateMapping": "user.numberOfChildren",
+      "validation": {
+        "min": 1,
+        "max": 20
+      },
+      "transitions": [
+        {
+          "condition": {
+            "operator": "any",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q7_age"
+          }
+        }
+      ],
+      "priority": 79
+    },
+    {
+      "id": "q7_age",
+      "text": "How old are you?",
+      "description": "Age can affect what services are available to you",
+      "type": "number",
+      "category": "personal",
+      "required": true,
+      "stateMapping": "user.age",
+      "validation": {
+        "min": 0,
+        "max": 120
+      },
+      "transitions": [
+        {
+          "condition": {
+            "operator": "any",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q8_at_risk_of_violence"
+          }
+        }
+      ],
+      "priority": 75
+    },
+    {
+      "id": "q8_at_risk_of_violence",
+      "text": "Are you at risk of violence or abuse if you return to your previous accommodation?",
+      "description": "Your safety is our priority. This information helps us provide appropriate support",
+      "type": "yes_no",
+      "category": "situation",
+      "required": true,
+      "stateMapping": "situation.atRiskOfViolence",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "any",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q9_local_connection"
+          }
+        }
+      ],
+      "priority": 70
+    },
+    {
+      "id": "q9_local_connection",
+      "text": "Do you have a local connection to London (lived, worked, or have family here)?",
+      "description": "Local connection can affect which services you can access",
+      "type": "yes_no",
+      "category": "legal",
+      "required": true,
+      "stateMapping": "user.hasLocalConnection",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "any",
+            "value": true
+          },
+          "next": {
+            "type": "action",
+            "id": "evaluate_rights"
+          }
+        }
+      ],
+      "priority": 65
+    }
+  ],
+  "exampleScenario": {
+    "description": "A person at Waterloo Station with a dog, facing homelessness tonight",
+    "initialState": {
+      "situation": {
+        "currentLocation": "Waterloo Station, London",
+        "homelessTonight": true,
+        "isHomeless": true,
+        "urgentNeeds": ["shelter", "safety"]
+      },
+      "user": {
+        "hasPets": true,
+        "pets": [
+          {
+            "type": "dog",
+            "size": "medium"
+          }
+        ],
+        "hasChildren": false,
+        "age": 32,
+        "hasLocalConnection": true
+      }
+    },
+    "expectedFlow": [
+      "q1_homeless_tonight",
+      "q2_current_location",
+      "q3_has_pets",
+      "q4_pet_type",
+      "q5_has_children",
+      "q7_age",
+      "q8_at_risk_of_violence",
+      "q9_local_connection",
+      "evaluate_rights"
+    ],
+    "expectedRulesTriggered": [
+      "section_188_emergency_duty",
+      "pet_friendly_shelter_priority"
+    ],
+    "expectedActions": [
+      "contact_streetlink_outreach",
+      "emergency_accommodation_assessment",
+      "contact_pet_friendly_services"
+    ],
+    "expectedServices": [
+      "streetlink_london",
+      "hope_house_pet_friendly_shelter",
+      "lambeth_council_emergency_housing"
+    ]
+  },
+  "metadata": {
+    "author": "U-HSP Development Team",
+    "version": "1.0.0",
+    "lastUpdated": "2025-11-19",
+    "tags": ["example", "waterloo", "pets", "emergency"]
+  }
+}

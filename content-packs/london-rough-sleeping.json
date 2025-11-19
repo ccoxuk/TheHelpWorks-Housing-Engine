@@ -1,0 +1,767 @@
+{
+  "id": "england-wales-london-rough-sleeping",
+  "name": "London Rough Sleeping Content Pack",
+  "description": "Comprehensive content pack for London rough sleeping and homelessness prevention, covering England/Wales legislation",
+  "version": "1.0.0",
+  "jurisdiction": "England/Wales",
+  "language": "en",
+  "supportedLanguages": ["en"],
+  "effectiveDate": "2025-01-01",
+  "entryPoint": "q1_homeless_tonight",
+  "questions": [
+    {
+      "id": "q1_homeless_tonight",
+      "text": "Are you homeless or will you be homeless tonight?",
+      "description": "This helps us understand the urgency of your situation",
+      "type": "yes_no",
+      "category": "situation",
+      "required": true,
+      "stateMapping": "situation.homelessTonight",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "equals",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q2_current_location"
+          }
+        }
+      ],
+      "priority": 100
+    },
+    {
+      "id": "q2_current_location",
+      "text": "Where are you right now?",
+      "type": "text",
+      "category": "situation",
+      "required": true,
+      "stateMapping": "situation.currentLocation",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "any",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q3_has_pets"
+          }
+        }
+      ]
+    },
+    {
+      "id": "q3_has_pets",
+      "text": "Do you have any pets with you?",
+      "type": "yes_no",
+      "category": "personal",
+      "required": true,
+      "stateMapping": "user.hasPets",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "equals",
+            "value": true
+          },
+          "next": {
+            "type": "question",
+            "id": "q5_has_children"
+          }
+        }
+      ]
+    },
+    {
+      "id": "q5_has_children",
+      "text": "Do you have any children with you?",
+      "type": "yes_no",
+      "category": "family",
+      "required": true,
+      "stateMapping": "user.hasChildren",
+      "transitions": [
+        {
+          "condition": {
+            "operator": "any",
+            "value": true
+          },
+          "next": {
+            "type": "action",
+            "id": "evaluate_section_188"
+          }
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "section_188_emergency_duty",
+      "name": "Section 188 Emergency Accommodation Duty",
+      "description": "Council duty to provide interim accommodation if applicant may be homeless, eligible, and in priority need",
+      "jurisdiction": "England/Wales",
+      "legalBasis": "Housing Act 1996 Section 188",
+      "priority": 100,
+      "conditions": {
+        "type": "all",
+        "rules": [
+          {
+            "field": "situation.homelessTonight",
+            "operator": "equals",
+            "value": true
+          },
+          {
+            "field": "legal.rightToReside",
+            "operator": "equals",
+            "value": true
+          }
+        ],
+        "nested": [
+          {
+            "type": "any",
+            "rules": [
+              {
+                "field": "user.hasChildren",
+                "operator": "equals",
+                "value": true
+              },
+              {
+                "field": "user.isPregnant",
+                "operator": "equals",
+                "value": true
+              },
+              {
+                "field": "user.age",
+                "operator": "lessThan",
+                "value": 18
+              },
+              {
+                "field": "situation.atRiskOfViolence",
+                "operator": "equals",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
+      "actions": [
+        "emergency_accommodation_assessment",
+        "contact_local_authority_emergency"
+      ],
+      "metadata": {
+        "version": "1.0.0",
+        "effectiveDate": "1996-01-01",
+        "author": "U-HSP Legal Team",
+        "tags": ["emergency", "section188", "priority-need", "interim-accommodation"]
+      }
+    },
+    {
+      "id": "pet_friendly_shelter_priority",
+      "name": "Pet-Friendly Shelter Prioritization",
+      "description": "When user has pets, prioritize pet-friendly services",
+      "jurisdiction": "England/Wales",
+      "priority": 50,
+      "conditions": {
+        "type": "all",
+        "rules": [
+          {
+            "field": "user.hasPets",
+            "operator": "equals",
+            "value": true
+          },
+          {
+            "field": "situation.homelessTonight",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "actions": [
+        "contact_pet_friendly_services",
+        "pets_in_crisis_referral"
+      ],
+      "metadata": {
+        "tags": ["pets", "shelter", "accommodation"]
+      }
+    },
+    {
+      "id": "rough_sleeping_outreach",
+      "name": "Rough Sleeping Outreach",
+      "description": "Trigger outreach team contact for rough sleepers",
+      "jurisdiction": "England/Wales",
+      "priority": 80,
+      "conditions": {
+        "type": "all",
+        "rules": [
+          {
+            "field": "situation.roughSleeping",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "actions": [
+        "contact_streetlink_outreach",
+        "outreach_team_referral"
+      ],
+      "metadata": {
+        "tags": ["rough-sleeping", "outreach"]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "contact_streetlink_outreach",
+      "name": "Contact StreetLink for Outreach Support",
+      "description": "Alert StreetLink about rough sleeper to trigger outreach team visit",
+      "type": "immediate",
+      "category": "emergency",
+      "urgency": "critical",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Call StreetLink on 0300 500 0914 (available 24/7)"
+        },
+        {
+          "order": 2,
+          "instruction": "Or use the StreetLink website or app to report location",
+          "requiresInput": false
+        },
+        {
+          "order": 3,
+          "instruction": "Provide exact location details (nearest landmark, street name)"
+        },
+        {
+          "order": 4,
+          "instruction": "Outreach team will aim to visit within 24 hours"
+        }
+      ],
+      "contactInfo": {
+        "phone": "0300 500 0914",
+        "website": "https://www.streetlink.org.uk",
+        "hoursOfOperation": "24/7"
+      },
+      "estimatedDuration": "5-10 minutes to report, outreach within 24 hours",
+      "relatedServices": ["streetlink_london"],
+      "metadata": {
+        "tags": ["outreach", "rough-sleeping", "immediate"]
+      }
+    },
+    {
+      "id": "emergency_accommodation_assessment",
+      "name": "Emergency Accommodation Assessment",
+      "description": "Apply for emergency accommodation under Section 188 duty",
+      "type": "application",
+      "category": "housing",
+      "urgency": "critical",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Contact the local authority housing department immediately"
+        },
+        {
+          "order": 2,
+          "instruction": "Explain that you are homeless tonight and have priority need"
+        },
+        {
+          "order": 3,
+          "instruction": "Request emergency accommodation under Section 188",
+          "requiresInput": true,
+          "inputFields": [
+            {
+              "name": "localAuthority",
+              "label": "Which local authority are you applying to?",
+              "type": "text",
+              "required": true
+            }
+          ]
+        },
+        {
+          "order": 4,
+          "instruction": "Provide proof of identity if available (but lack of ID should not prevent assessment)"
+        },
+        {
+          "order": 5,
+          "instruction": "Answer questions about your circumstances honestly"
+        }
+      ],
+      "requiredInformation": [
+        "Current location",
+        "Reason for homelessness",
+        "Any children or dependents",
+        "Any vulnerabilities"
+      ],
+      "estimatedDuration": "2-4 hours for initial assessment",
+      "documentation": {
+        "guidance": "The council has a legal duty to provide interim accommodation while they assess your case if you appear to be homeless, eligible, and in priority need."
+      },
+      "outcomes": [
+        {
+          "id": "accommodation_provided",
+          "description": "Emergency accommodation provided",
+          "nextActions": ["full_homelessness_assessment"]
+        },
+        {
+          "id": "accommodation_refused",
+          "description": "Emergency accommodation refused",
+          "nextActions": ["legal_advice_referral", "complaint_process"]
+        }
+      ],
+      "metadata": {
+        "tags": ["emergency", "section188", "assessment", "local-authority"]
+      }
+    },
+    {
+      "id": "contact_local_authority_emergency",
+      "name": "Contact Local Authority Emergency Housing Team",
+      "description": "Contact the appropriate London borough emergency housing team",
+      "type": "immediate",
+      "category": "housing",
+      "urgency": "critical",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Identify which London borough you are in or have connection to"
+        },
+        {
+          "order": 2,
+          "instruction": "Call the borough's emergency housing line (numbers provided for each borough)"
+        },
+        {
+          "order": 3,
+          "instruction": "If outside office hours, many boroughs have 24-hour emergency lines"
+        }
+      ],
+      "estimatedDuration": "Immediate call, may need to attend office",
+      "contactInfo": {
+        "hoursOfOperation": "Varies by borough - many have 24-hour emergency lines"
+      },
+      "metadata": {
+        "tags": ["local-authority", "emergency", "housing"]
+      }
+    },
+    {
+      "id": "contact_pet_friendly_services",
+      "name": "Contact Pet-Friendly Emergency Services",
+      "description": "Reach out to services that accommodate people with pets",
+      "type": "referral",
+      "category": "emergency",
+      "urgency": "high",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Contact Hope House (pet-friendly emergency accommodation)"
+        },
+        {
+          "order": 2,
+          "instruction": "Contact Pets in Crisis for temporary pet fostering if needed"
+        },
+        {
+          "order": 3,
+          "instruction": "Ask local authority about pet-friendly accommodation options"
+        }
+      ],
+      "relatedServices": ["hope_house_pet_friendly_shelter", "pets_in_crisis"],
+      "estimatedDuration": "30 minutes to 2 hours",
+      "metadata": {
+        "tags": ["pets", "emergency", "shelter"]
+      }
+    },
+    {
+      "id": "stabilizing_immediate_needs",
+      "name": "Stabilize Immediate Needs",
+      "description": "Address urgent needs like food, warmth, and safety",
+      "type": "immediate",
+      "category": "emergency",
+      "urgency": "critical",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "If in danger, call 999 immediately"
+        },
+        {
+          "order": 2,
+          "instruction": "Find nearest warm space (station, library, café)"
+        },
+        {
+          "order": 3,
+          "instruction": "Locate nearest food bank or day center (details in services)"
+        },
+        {
+          "order": 4,
+          "instruction": "Get medical attention if needed - A&E or walk-in center"
+        }
+      ],
+      "estimatedDuration": "Immediate",
+      "metadata": {
+        "tags": ["immediate", "safety", "basic-needs"]
+      }
+    },
+    {
+      "id": "pets_in_crisis_referral",
+      "name": "Pets in Crisis Referral",
+      "description": "Arrange temporary fostering for pets while securing accommodation",
+      "type": "referral",
+      "category": "support",
+      "urgency": "high",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Contact Pets in Crisis helpline"
+        },
+        {
+          "order": 2,
+          "instruction": "Explain your situation and need for temporary pet care"
+        },
+        {
+          "order": 3,
+          "instruction": "Provide pet details (type, size, temperament, vaccination status)"
+        }
+      ],
+      "contactInfo": {
+        "phone": "0800 678 1234",
+        "website": "https://www.petsatcats.org/pets-in-crisis",
+        "email": "help@petsatcats.org"
+      },
+      "relatedServices": ["pets_in_crisis"],
+      "estimatedDuration": "1-2 hours for initial arrangement",
+      "metadata": {
+        "tags": ["pets", "fostering", "temporary-care"]
+      }
+    },
+    {
+      "id": "outreach_team_referral",
+      "name": "Direct Outreach Team Referral",
+      "description": "Direct referral to local outreach team for assessment and support",
+      "type": "referral",
+      "category": "support",
+      "urgency": "high",
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "Contact Thames Reach or local outreach team"
+        },
+        {
+          "order": 2,
+          "instruction": "Provide current location and situation details"
+        },
+        {
+          "order": 3,
+          "instruction": "Arrange assessment visit"
+        }
+      ],
+      "relatedServices": ["thames_reach_outreach"],
+      "estimatedDuration": "Outreach visit within 24-48 hours",
+      "metadata": {
+        "tags": ["outreach", "assessment", "support"]
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "streetlink_london",
+      "name": "StreetLink London",
+      "description": "24/7 service to report rough sleepers and trigger outreach team visits",
+      "type": "hotline",
+      "provider": {
+        "name": "Homeless Link (on behalf of GLA)",
+        "type": "charity",
+        "website": "https://www.streetlink.org.uk"
+      },
+      "contact": {
+        "phone": "0300 500 0914",
+        "website": "https://www.streetlink.org.uk"
+      },
+      "availability": {
+        "isAvailable24_7": true
+      },
+      "eligibility": {
+        "acceptsPets": false,
+        "requiresReferral": false
+      },
+      "services": ["rough sleeper reporting", "outreach coordination"],
+      "cost": {
+        "isFree": true
+      },
+      "tags": ["24-7", "outreach", "rough-sleeping", "emergency"],
+      "metadata": {
+        "lastVerified": "2025-11-01"
+      }
+    },
+    {
+      "id": "hope_house_pet_friendly_shelter",
+      "name": "Hope House Pet-Friendly Emergency Shelter",
+      "description": "Emergency accommodation that accepts people with pets (fictional example)",
+      "type": "emergency_shelter",
+      "provider": {
+        "name": "Hope House Foundation",
+        "type": "charity"
+      },
+      "contact": {
+        "phone": "020 7123 4567",
+        "emergencyPhone": "020 7123 4568",
+        "email": "intake@hopehouse.org.uk"
+      },
+      "location": {
+        "address": {
+          "street": "123 Waterloo Road",
+          "city": "London",
+          "region": "Lambeth",
+          "postcode": "SE1 8XX",
+          "country": "UK"
+        },
+        "accessibilityInfo": "Wheelchair accessible ground floor",
+        "nearestTransport": "Waterloo Station (5 min walk)"
+      },
+      "availability": {
+        "schedule": {
+          "monday": "24 hours",
+          "tuesday": "24 hours",
+          "wednesday": "24 hours",
+          "thursday": "24 hours",
+          "friday": "24 hours",
+          "saturday": "24 hours",
+          "sunday": "24 hours"
+        },
+        "isAvailable24_7": true
+      },
+      "capacity": {
+        "total": 20,
+        "available": 5
+      },
+      "eligibility": {
+        "ageRestrictions": {
+          "minimum": 18
+        },
+        "genderRestrictions": "any",
+        "acceptsPets": true,
+        "petRestrictions": "Dogs and cats accepted if well-behaved. Must be on lead/in carrier.",
+        "requiresReferral": false
+      },
+      "services": ["accommodation", "meals", "shower facilities", "pet care area", "basic veterinary advice"],
+      "cost": {
+        "isFree": true
+      },
+      "tags": ["pet-friendly", "emergency", "24-7", "waterloo"],
+      "metadata": {
+        "lastVerified": "2025-11-15",
+        "dataSource": "Example data"
+      }
+    },
+    {
+      "id": "lambeth_council_emergency_housing",
+      "name": "Lambeth Council Emergency Housing Team",
+      "description": "Lambeth Council's emergency housing and homelessness assessment team",
+      "type": "housing_assistance",
+      "provider": {
+        "name": "Lambeth Council",
+        "type": "government",
+        "website": "https://www.lambeth.gov.uk/housing"
+      },
+      "contact": {
+        "phone": "020 7926 1000",
+        "emergencyPhone": "020 7926 2000",
+        "email": "housing@lambeth.gov.uk"
+      },
+      "location": {
+        "address": {
+          "street": "Civic Centre, 6 Brixton Hill",
+          "city": "London",
+          "region": "Lambeth",
+          "postcode": "SW2 1EG",
+          "country": "UK"
+        }
+      },
+      "availability": {
+        "schedule": {
+          "monday": "9:00-17:00",
+          "tuesday": "9:00-17:00",
+          "wednesday": "9:00-17:00",
+          "thursday": "9:00-17:00",
+          "friday": "9:00-17:00"
+        },
+        "isAvailable24_7": false
+      },
+      "eligibility": {
+        "requiresReferral": false,
+        "localConnectionRequired": false,
+        "otherRequirements": ["Must be eligible for assistance", "Assessment required"]
+      },
+      "services": ["homelessness assessment", "emergency accommodation", "housing advice", "prevention support"],
+      "cost": {
+        "isFree": true
+      },
+      "tags": ["local-authority", "assessment", "section188", "lambeth"],
+      "metadata": {
+        "lastVerified": "2025-11-01"
+      }
+    },
+    {
+      "id": "thames_reach_outreach",
+      "name": "Thames Reach Outreach Team",
+      "description": "Street outreach team providing support to rough sleepers across London",
+      "type": "outreach_team",
+      "provider": {
+        "name": "Thames Reach",
+        "type": "charity",
+        "website": "https://www.thamesreach.org.uk",
+        "charityNumber": "1096519"
+      },
+      "contact": {
+        "phone": "020 7702 4260",
+        "email": "outreach@thamesreach.org.uk"
+      },
+      "availability": {
+        "isAvailable24_7": false,
+        "schedule": {
+          "monday": "8:00-22:00",
+          "tuesday": "8:00-22:00",
+          "wednesday": "8:00-22:00",
+          "thursday": "8:00-22:00",
+          "friday": "8:00-22:00",
+          "saturday": "8:00-22:00",
+          "sunday": "8:00-22:00"
+        }
+      },
+      "eligibility": {
+        "acceptsPets": true,
+        "requiresReferral": false
+      },
+      "services": ["street outreach", "assessment", "support planning", "accommodation referral", "health support"],
+      "cost": {
+        "isFree": true
+      },
+      "tags": ["outreach", "rough-sleeping", "support", "assessment"],
+      "metadata": {
+        "lastVerified": "2025-10-15"
+      }
+    },
+    {
+      "id": "pets_in_crisis",
+      "name": "Pets in Crisis",
+      "description": "Temporary pet fostering service for people in housing crisis",
+      "type": "other",
+      "provider": {
+        "name": "Cats Protection",
+        "type": "charity",
+        "website": "https://www.cats.org.uk"
+      },
+      "contact": {
+        "phone": "0800 678 1234",
+        "email": "help@petsatcats.org",
+        "website": "https://www.cats.org.uk/pets-in-crisis"
+      },
+      "availability": {
+        "schedule": {
+          "monday": "9:00-17:00",
+          "tuesday": "9:00-17:00",
+          "wednesday": "9:00-17:00",
+          "thursday": "9:00-17:00",
+          "friday": "9:00-17:00"
+        }
+      },
+      "eligibility": {
+        "acceptsPets": true,
+        "requiresReferral": false
+      },
+      "services": ["temporary pet fostering", "pet care advice", "veterinary support"],
+      "cost": {
+        "isFree": true
+      },
+      "tags": ["pets", "fostering", "temporary", "crisis"],
+      "metadata": {
+        "lastVerified": "2025-11-01"
+      }
+    },
+    {
+      "id": "crisis_skylight_london",
+      "name": "Crisis Skylight London",
+      "description": "Day center providing support, education, and training for homeless people",
+      "type": "day_center",
+      "provider": {
+        "name": "Crisis",
+        "type": "charity",
+        "website": "https://www.crisis.org.uk",
+        "charityNumber": "1082947"
+      },
+      "contact": {
+        "phone": "020 7426 3800",
+        "email": "skylight.london@crisis.org.uk"
+      },
+      "location": {
+        "address": {
+          "street": "50-52 Commercial Street",
+          "city": "London",
+          "region": "Tower Hamlets",
+          "postcode": "E1 6LT",
+          "country": "UK"
+        },
+        "nearestTransport": "Aldgate East Station"
+      },
+      "availability": {
+        "schedule": {
+          "monday": "9:00-17:00",
+          "tuesday": "9:00-17:00",
+          "wednesday": "9:00-17:00",
+          "thursday": "9:00-17:00",
+          "friday": "9:00-17:00"
+        }
+      },
+      "eligibility": {
+        "requiresReferral": false
+      },
+      "services": ["hot meals", "shower facilities", "laundry", "health services", "education", "job training", "housing support"],
+      "cost": {
+        "isFree": true
+      },
+      "tags": ["day-center", "meals", "support", "education"],
+      "metadata": {
+        "lastVerified": "2025-09-20"
+      }
+    }
+  ],
+  "legalReferences": [
+    {
+      "id": "housing_act_1996_s188",
+      "name": "Housing Act 1996 Section 188",
+      "citation": "Housing Act 1996, Section 188",
+      "url": "https://www.legislation.gov.uk/ukpga/1996/52/section/188",
+      "summary": "Interim duty to accommodate in case of apparent priority need. Local authorities must provide interim accommodation if they have reason to believe an applicant may be homeless, eligible for assistance, and have a priority need."
+    },
+    {
+      "id": "homelessness_reduction_act_2017",
+      "name": "Homelessness Reduction Act 2017",
+      "citation": "Homelessness Reduction Act 2017",
+      "url": "https://www.legislation.gov.uk/ukpga/2017/13/contents/enacted",
+      "summary": "Places duties on local authorities to prevent and relieve homelessness for all eligible applicants, not just those in priority need. Includes requirements for personalized housing plans and early intervention."
+    }
+  ],
+  "resources": {
+    "helplines": [
+      {
+        "name": "StreetLink",
+        "phone": "0300 500 0914",
+        "description": "Report rough sleeping to trigger outreach support",
+        "available24_7": true
+      },
+      {
+        "name": "Shelter Helpline",
+        "phone": "0808 800 4444",
+        "description": "Free housing advice and support",
+        "available24_7": false
+      },
+      {
+        "name": "National Domestic Abuse Helpline",
+        "phone": "0808 2000 247",
+        "description": "Support for people experiencing domestic abuse",
+        "available24_7": true
+      }
+    ]
+  },
+  "metadata": {
+    "author": "U-HSP Development Team",
+    "maintainer": "TheHelpWorks",
+    "license": "CC-BY-SA-4.0",
+    "dataSource": "UK Government legislation, charity services, fictional examples",
+    "lastVerified": "2025-11-19",
+    "tags": ["london", "rough-sleeping", "england", "wales", "emergency"]
+  }
+}

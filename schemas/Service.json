@@ -1,0 +1,309 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Service",
+  "description": "Defines a service or resource available to homeless individuals",
+  "type": "object",
+  "required": ["id", "name", "type", "provider"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this service"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the service"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the service"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["emergency_shelter", "day_center", "food_bank", "medical", "mental_health", "substance_abuse", "legal_aid", "job_training", "housing_assistance", "financial_aid", "outreach_team", "hotline", "other"],
+      "description": "Type of service provided"
+    },
+    "provider": {
+      "type": "object",
+      "required": ["name"],
+      "description": "Organization or entity providing the service",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the service provider"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["government", "charity", "ngo", "religious", "private", "volunteer"],
+          "description": "Type of organization"
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "Provider's website"
+        },
+        "charityNumber": {
+          "type": "string",
+          "description": "Charity registration number if applicable"
+        }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "description": "Contact information for the service",
+      "properties": {
+        "phone": {
+          "type": "string",
+          "description": "Primary phone number"
+        },
+        "emergencyPhone": {
+          "type": "string",
+          "description": "Emergency or 24-hour phone number"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address"
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "Service-specific website"
+        },
+        "textLine": {
+          "type": "string",
+          "description": "SMS/text service number"
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "description": "Physical location of the service",
+      "properties": {
+        "address": {
+          "type": "object",
+          "properties": {
+            "street": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "region": {
+              "type": "string",
+              "description": "State/County/Borough"
+            },
+            "postcode": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            }
+          }
+        },
+        "coordinates": {
+          "type": "object",
+          "description": "GPS coordinates",
+          "properties": {
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            }
+          }
+        },
+        "accessibilityInfo": {
+          "type": "string",
+          "description": "Information about physical accessibility"
+        },
+        "nearestTransport": {
+          "type": "string",
+          "description": "Information about nearby public transport"
+        }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "description": "When the service is available",
+      "properties": {
+        "schedule": {
+          "type": "object",
+          "description": "Regular schedule",
+          "properties": {
+            "monday": {
+              "type": "string",
+              "description": "Hours (e.g., '9:00-17:00', 'closed', '24 hours')"
+            },
+            "tuesday": {
+              "type": "string"
+            },
+            "wednesday": {
+              "type": "string"
+            },
+            "thursday": {
+              "type": "string"
+            },
+            "friday": {
+              "type": "string"
+            },
+            "saturday": {
+              "type": "string"
+            },
+            "sunday": {
+              "type": "string"
+            }
+          }
+        },
+        "isAvailable24_7": {
+          "type": "boolean",
+          "description": "Whether service is available 24/7",
+          "default": false
+        },
+        "exceptionalClosures": {
+          "type": "array",
+          "description": "Dates when service is closed",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "capacity": {
+      "type": "object",
+      "description": "Service capacity information",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "description": "Total capacity (e.g., bed spaces)",
+          "minimum": 0
+        },
+        "available": {
+          "type": "integer",
+          "description": "Currently available capacity",
+          "minimum": 0
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When capacity was last updated"
+        }
+      }
+    },
+    "eligibility": {
+      "type": "object",
+      "description": "Eligibility criteria for using this service",
+      "properties": {
+        "ageRestrictions": {
+          "type": "object",
+          "properties": {
+            "minimum": {
+              "type": "integer"
+            },
+            "maximum": {
+              "type": "integer"
+            }
+          }
+        },
+        "genderRestrictions": {
+          "type": "string",
+          "enum": ["any", "male", "female", "non-binary"],
+          "description": "Gender restrictions if any"
+        },
+        "acceptsPets": {
+          "type": "boolean",
+          "description": "Whether pets are allowed",
+          "default": false
+        },
+        "petRestrictions": {
+          "type": "string",
+          "description": "Details about pet policies"
+        },
+        "requiresReferral": {
+          "type": "boolean",
+          "description": "Whether a referral is required",
+          "default": false
+        },
+        "localConnectionRequired": {
+          "type": "boolean",
+          "description": "Whether local connection to area is required",
+          "default": false
+        },
+        "otherRequirements": {
+          "type": "array",
+          "description": "Other eligibility requirements",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "services": {
+      "type": "array",
+      "description": "Specific services provided",
+      "items": {
+        "type": "string"
+      },
+      "examples": [["accommodation", "meals", "shower facilities", "laundry", "medical care"]]
+    },
+    "cost": {
+      "type": "object",
+      "description": "Cost information",
+      "properties": {
+        "isFree": {
+          "type": "boolean",
+          "default": true
+        },
+        "amount": {
+          "type": "number",
+          "description": "Cost if not free"
+        },
+        "currency": {
+          "type": "string",
+          "default": "GBP"
+        },
+        "details": {
+          "type": "string",
+          "description": "Details about costs or fees"
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags for categorizing and searching",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "lastVerified": {
+          "type": "string",
+          "format": "date",
+          "description": "Date when information was last verified"
+        },
+        "dataSource": {
+          "type": "string",
+          "description": "Source of this service information"
+        }
+      }
+    }
+  }
+}
